@@ -4,14 +4,14 @@ Application web construite sur **Laravel 13**, **Inertia v3** et **Svelte 5**, �
 
 ## Stack technique
 
-| Couche          | Technologies                                                            |
-| --------------- | ----------------------------------------------------------------------- |
-| Back-end        | PHP 8.4, Laravel 13, Laravel Fortify (authentification)                 |
-| Front-end       | Svelte 5, Inertia v3, TypeScript, Tailwind CSS 4, bits-ui, Lucide       |
-| Routage typé    | Laravel Wayfinder (fonctions TypeScript générées depuis les routes)     |
-| Build           | Vite+ (`vp`)                                                            |
-| Base de données | MariaDB 11 + Valkey, via Laravel Sail (Docker)                          |
-| Qualité         | Pest, Larastan (PHPStan), Pint, svelte-check                            |
+| Couche          | Technologies                                                        |
+| --------------- | ------------------------------------------------------------------- |
+| Back-end        | PHP 8.4, Laravel 13, Laravel Fortify (authentification)             |
+| Front-end       | Svelte 5, Inertia v3, TypeScript, Tailwind CSS 4, bits-ui, Lucide   |
+| Routage typé    | Laravel Wayfinder (fonctions TypeScript générées depuis les routes) |
+| Build           | Vite+ (`vp`)                                                        |
+| Base de données | MariaDB 11 + Valkey, via Laravel Sail (Docker)                      |
+| Qualité         | Pest, Larastan (PHPStan), Pint, svelte-check                        |
 
 ## Fonctionnalités incluses
 
@@ -26,18 +26,18 @@ Le projet utilise **Laravel Sail** (Docker) pour que tous les développeurs trav
 
 Sail est une surcouche de `docker compose`. Les services sont décrits dans `compose.yaml` :
 
-| Service        | Rôle                                                                   |
-| -------------- | ---------------------------------------------------------------------- |
+| Service        | Rôle                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
 | `laravel.test` | PHP 8.4, Composer et Node. Sert l'application sur le port 80 et Vite sur le 5173 |
-| `mariadb`      | Base MariaDB 11 (base `logibloom`, et base `testing` pour les tests)   |
-| `valkey`       | Cache / files d'attente compatible Redis                               |
+| `mariadb`      | Base MariaDB 11 (base `logibloom`, et base `testing` pour les tests)             |
+| `valkey`       | Cache / files d'attente compatible Redis                                         |
 
 Le dossier du projet est monté dans le conteneur : vous éditez le code sur votre machine, il s'exécute dans le conteneur.
 
 ## Prérequis
 
 - **Docker** (Docker Desktop sur Windows/macOS, ou Docker Engine sur Linux)
-- **Windows** : WSL 2. Clonez le projet **dans le système de fichiers WSL** (ex. `~/projets`), pas dans `/mnt/c/...`, sinon les performances s'effondrent. Activez l'intégration WSL dans Docker Desktop (*Settings → Resources → WSL integration*).
+- **Windows** : WSL 2. Clonez le projet **dans le système de fichiers WSL** (ex. `~/projets`), pas dans `/mnt/c/...`, sinon les performances s'effondrent. Activez l'intégration WSL dans Docker Desktop (_Settings → Resources → WSL integration_).
 
 Il n'est pas nécessaire d'installer PHP, Composer ou Node sur votre machine.
 
@@ -88,12 +88,12 @@ Pour traiter les jobs en file d'attente, lancez dans un autre terminal : `sail a
 
 **Toutes les commandes passent par Sail** pour s'exécuter dans le conteneur :
 
-| Au lieu de…           | Utilisez…                 |
-| --------------------- | ------------------------- |
-| `php artisan ...`     | `sail artisan ...`        |
-| `composer ...`        | `sail composer ...`       |
-| `npm ...`             | `sail npm ...`            |
-| `php ...`             | `sail php ...`            |
+| Au lieu de…       | Utilisez…           |
+| ----------------- | ------------------- |
+| `php artisan ...` | `sail artisan ...`  |
+| `composer ...`    | `sail composer ...` |
+| `npm ...`         | `sail npm ...`      |
+| `php ...`         | `sail php ...`      |
 
 Autres commandes utiles :
 
