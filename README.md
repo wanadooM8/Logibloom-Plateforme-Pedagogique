@@ -109,19 +109,40 @@ Pour se connecter à la base depuis un client graphique (DBeaver, TablePlus…) 
 
 Pour activer Xdebug, définissez `SAIL_XDEBUG_MODE=develop,debug` dans `.env` puis relancez `sail up -d`.
 
-## Tests et qualité du code
+## Tests & CI
 
-| Commande                   | Description                                                  |
-| -------------------------- | ------------------------------------------------------------ |
-| `sail composer test`       | Vérifie le style (Pint), l'analyse statique, puis les tests  |
-| `sail artisan test`        | Lance uniquement la suite de tests Pest (base `testing`)     |
-| `sail composer lint`       | Formate le code PHP avec Pint                                |
-| `sail composer types:check`| Analyse statique avec Larastan                               |
-| `sail npm run check`       | Lint et format du code front-end                             |
-| `sail npm run types:check` | Vérification des types Svelte/TypeScript                     |
-| `sail composer ci:check`   | Exécute l'ensemble des vérifications (comme la CI)           |
+### Outils utilisés
 
-La CI GitHub Actions (`.github/workflows/tests.yml`) exécute ces vérifications à chaque push sur `main` et sur chaque pull request.
+- **[Pest](https://pestphp.com)** : framework de tests (basé sur PHPUnit) avec le plugin Laravel
+- **SQLite en mémoire** : base de données de test, rapide et isolée (voir `phpunit.xml`)
+- **Factories Eloquent** : génération des données de test
+- **[Laravel Pint](https://laravel.com/docs/pint)** : vérification du style de code
+- **[Larastan](https://github.com/larastan/larastan)** : analyse statique (PHPStan pour Laravel)
+- **GitHub Actions** : CI exécutée à chaque push et pull request (`.github/workflows/tests.yml`)
+
+### Lancer les tests en local
+
+```bash
+sail artisan test                    # tous les tests
+sail artisan test --filter=Nom       # un test précis
+sail bin pint                        # corriger le style
+sail bin pint --test                 # vérifier le style sans modifier
+sail bin phpstan analyse             # analyse statique
+```
+
+### Workflow TDD
+
+1. **Rouge** : écrire le test d'abord (il doit échouer)
+2. **Vert** : écrire le minimum de code pour le faire passer
+3. **Refactor** : nettoyer le code, les tests garantissent l'absence de régression
+
+Chaque push déclenche la CI : les trois jobs (**Tests**, **Pint**, **Larastan**) doivent être verts avant de merger sur `main`.
+
+### Conventions
+
+- Les tests vont dans `tests/Feature` (comportement, base de données) ou `tests/Unit` (logique isolée)
+- Chaque modèle possède une factory dans `database/factories`
+- Les tests de base de données utilisent `RefreshDatabase`
 
 ## Structure du projet
 
