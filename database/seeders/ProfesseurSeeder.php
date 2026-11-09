@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Professeur;
 use Illuminate\Database\Seeder;
 
-class ProfesseurSeeders extends Seeder
+class ProfesseurSeeder extends Seeder
 {
     /**
      * Run the database seeds.
