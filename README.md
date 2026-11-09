@@ -4,14 +4,14 @@ Application web construite sur **Laravel 13**, **Inertia v3** et **Svelte 5**, �
 
 ## Stack technique
 
-| Couche          | Technologies                                                            |
-| --------------- | ----------------------------------------------------------------------- |
-| Back-end        | PHP 8.4, Laravel 13, Laravel Fortify (authentification)                 |
-| Front-end       | Svelte 5, Inertia v3, TypeScript, Tailwind CSS 4, bits-ui, Lucide       |
-| Routage typé    | Laravel Wayfinder (fonctions TypeScript générées depuis les routes)     |
-| Build           | Vite+ (`vp`)                                                            |
-| Base de données | MariaDB 11 + Valkey, via Laravel Sail (Docker)                          |
-| Qualité         | Pest, Larastan (PHPStan), Pint, svelte-check                            |
+| Couche          | Technologies                                                        |
+| --------------- | ------------------------------------------------------------------- |
+| Back-end        | PHP 8.4, Laravel 13, Laravel Fortify (authentification)             |
+| Front-end       | Svelte 5, Inertia v3, TypeScript, Tailwind CSS 4, bits-ui, Lucide   |
+| Routage typé    | Laravel Wayfinder (fonctions TypeScript générées depuis les routes) |
+| Build           | Vite+ (`vp`)                                                        |
+| Base de données | MariaDB 11 + Valkey, via Laravel Sail (Docker)                      |
+| Qualité         | Pest, Larastan (PHPStan), Pint, svelte-check                        |
 
 ## Fonctionnalités incluses
 
@@ -26,18 +26,18 @@ Le projet utilise **Laravel Sail** (Docker) pour que tous les développeurs trav
 
 Sail est une surcouche de `docker compose`. Les services sont décrits dans `compose.yaml` :
 
-| Service        | Rôle                                                                   |
-| -------------- | ---------------------------------------------------------------------- |
+| Service        | Rôle                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
 | `laravel.test` | PHP 8.4, Composer et Node. Sert l'application sur le port 80 et Vite sur le 5173 |
-| `mariadb`      | Base MariaDB 11 (base `logibloom`, et base `testing` pour les tests)   |
-| `valkey`       | Cache / files d'attente compatible Redis                               |
+| `mariadb`      | Base MariaDB 11 (base `logibloom`, et base `testing` pour les tests)             |
+| `valkey`       | Cache / files d'attente compatible Redis                                         |
 
 Le dossier du projet est monté dans le conteneur : vous éditez le code sur votre machine, il s'exécute dans le conteneur.
 
 ## Prérequis
 
 - **Docker** (Docker Desktop sur Windows/macOS, ou Docker Engine sur Linux)
-- **Windows** : WSL 2. Clonez le projet **dans le système de fichiers WSL** (ex. `~/projets`), pas dans `/mnt/c/...`, sinon les performances s'effondrent. Activez l'intégration WSL dans Docker Desktop (*Settings → Resources → WSL integration*).
+- **Windows** : WSL 2. Clonez le projet **dans le système de fichiers WSL** (ex. `~/projets`), pas dans `/mnt/c/...`, sinon les performances s'effondrent. Activez l'intégration WSL dans Docker Desktop (_Settings → Resources → WSL integration_).
 
 Il n'est pas nécessaire d'installer PHP, Composer ou Node sur votre machine.
 
@@ -88,12 +88,12 @@ Pour traiter les jobs en file d'attente, lancez dans un autre terminal : `sail a
 
 **Toutes les commandes passent par Sail** pour s'exécuter dans le conteneur :
 
-| Au lieu de…           | Utilisez…                 |
-| --------------------- | ------------------------- |
-| `php artisan ...`     | `sail artisan ...`        |
-| `composer ...`        | `sail composer ...`       |
-| `npm ...`             | `sail npm ...`            |
-| `php ...`             | `sail php ...`            |
+| Au lieu de…       | Utilisez…           |
+| ----------------- | ------------------- |
+| `php artisan ...` | `sail artisan ...`  |
+| `composer ...`    | `sail composer ...` |
+| `npm ...`         | `sail npm ...`      |
+| `php ...`         | `sail php ...`      |
 
 Autres commandes utiles :
 
@@ -109,19 +109,40 @@ Pour se connecter à la base depuis un client graphique (DBeaver, TablePlus…) 
 
 Pour activer Xdebug, définissez `SAIL_XDEBUG_MODE=develop,debug` dans `.env` puis relancez `sail up -d`.
 
-## Tests et qualité du code
+## Tests & CI
 
-| Commande                   | Description                                                  |
-| -------------------------- | ------------------------------------------------------------ |
-| `sail composer test`       | Vérifie le style (Pint), l'analyse statique, puis les tests  |
-| `sail artisan test`        | Lance uniquement la suite de tests Pest (base `testing`)     |
-| `sail composer lint`       | Formate le code PHP avec Pint                                |
-| `sail composer types:check`| Analyse statique avec Larastan                               |
-| `sail npm run check`       | Lint et format du code front-end                             |
-| `sail npm run types:check` | Vérification des types Svelte/TypeScript                     |
-| `sail composer ci:check`   | Exécute l'ensemble des vérifications (comme la CI)           |
+### Outils utilisés
 
-La CI GitHub Actions (`.github/workflows/tests.yml`) exécute ces vérifications à chaque push sur `main` et sur chaque pull request.
+- **[Pest](https://pestphp.com)** : framework de tests (basé sur PHPUnit) avec le plugin Laravel
+- **SQLite en mémoire** : base de données de test, rapide et isolée (voir `phpunit.xml`)
+- **Factories Eloquent** : génération des données de test
+- **[Laravel Pint](https://laravel.com/docs/pint)** : vérification du style de code
+- **[Larastan](https://github.com/larastan/larastan)** : analyse statique (PHPStan pour Laravel)
+- **GitHub Actions** : CI exécutée à chaque push et pull request (`.github/workflows/tests.yml`)
+
+### Lancer les tests en local
+
+```bash
+sail artisan test                    # tous les tests
+sail artisan test --filter=Nom       # un test précis
+sail bin pint                        # corriger le style
+sail bin pint --test                 # vérifier le style sans modifier
+sail bin phpstan analyse             # analyse statique
+```
+
+### Workflow TDD
+
+1. **Rouge** : écrire le test d'abord (il doit échouer)
+2. **Vert** : écrire le minimum de code pour le faire passer
+3. **Refactor** : nettoyer le code, les tests garantissent l'absence de régression
+
+Chaque push déclenche la CI : les trois jobs (**Tests**, **Pint**, **Larastan**) doivent être verts avant de merger sur `main`.
+
+### Conventions
+
+- Les tests vont dans `tests/Feature` (comportement, base de données) ou `tests/Unit` (logique isolée)
+- Chaque modèle possède une factory dans `database/factories`
+- Les tests de base de données utilisent `RefreshDatabase`
 
 ## Structure du projet
 
